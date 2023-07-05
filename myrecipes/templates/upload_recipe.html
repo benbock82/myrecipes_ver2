@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Create Recipe</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Title</label>
+                <br>
+                {{ form.title }}
+            </div>
+            <div class="mb-3">
+                <label for="id_description" class="form-label">Description (optional)</label>
+                <br>
+                <a style="font-size: 12px;"> Provide a descriptive or storytelling narrative about this recipe</a>
+                <br>
+                {{ form.description }}
+            </div>
+            <div class="mb-3">
+                <label for="id_cuisine" class="form-label">Diets/Intolerances/Cuisines/Meal Types Tags</label>
+                <br>
+                <a style="font-size: 12px;"> Please enter the tags like '#vegan#lunch#chinese'</a>
+                <br>
+                {{ form.cuisines_text }}
+            </div>
+            <div class="mb-3">
+                <label for="id_ingredients" class="form-label">Ingredients</label>
+                <br>
+                {{ form.ingredients_text }}
+            </div>
+            <div class="mb-3">
+                <label for="id_instructions" class="form-label">Cooking Instructions</label>
+                <br>
+                {{ form.cooking_method_text}}
+            </div>
+            <div class="mb-3">
+                <label for="id_image" class="form-label">Please upload one image. (optional)</label>
+                <img id="image-preview" style="max-width: 200px; max-height: auto;">
+                <br>
+                <input type="file" name="image" accept="image/*" class="form-control-file" onchange="previewImage(event)">
+            </div>
+            <div class="mb-3">
+                <label for="id_video_sharing_url" class="form-label">Video Sharing Platform URL (optional)</label>
+                <br>
+                <a style="font-size: 12px;"> Video sharing platform like youtube </a>
+                <br>
+                {{ form.youtube_url }}
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </div>
+        </form>
+    </div>
+<script>
+    // JavaScript to handle image preview
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+
+        reader.onload = function() {
+            var imagePreview = document.getElementById('image-preview');
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block';
+        }
+
+        if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

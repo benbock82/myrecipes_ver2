@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+    <div class="container">
+        <h2>Account</h2>
+        <p>Welcome, {{ user.username }}!</p>
+        <p>Email: {{ user.email|replace_email_characters }}</p>
+        <!-- Add more account details here -->
+        <form action="{% url 'change_password' %}" method="get">
+            <button class="btn btn-primary" type="submit">Change Password</button>
+        </form>
+        <br>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Logout</button>
+        </form>
+        <br>
+        <h5>Uploaded Recipes</h5>
+        {% if user_recipes %}
+            <table class="recipe-table">
+                <thead>
+                    <tr>
+                        <th>Date Created</th>
+                        <th>Title</th>
+                        <th>Types Tags</th>
+                        <th>Ingredient Tags <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="The ingredient tags provided are based on the internal food ingredient list and may not include all the ingredients mentioned in the ingredients field.."></i></th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recipe in user_recipes %}
+                        <tr>
+                            <td class="recipe-cell">{{ recipe.date_created|date:"d/m/y" }}</td>
+                            <td class="recipe-cell"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></td>
+                            <td class="recipe-cell">
+                                {% for cuisine in recipe.cuisines_tag.all %}
+                                    {{ cuisine.name }}
+                                    {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="recipe-cell">
+                                {% for ingredient in recipe.ingredient_tag.all %}
+                                    {{ ingredient.name }}
+                                    {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="recipe-cell">
+                                <a href="{% url 'edit_recipe' recipe.id %}" class="btn btn-primary">Edit</a>
+                            </td>
+                            <td class="recipe-cell">
+                                <form action="{% url 'delete_recipe' recipe.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No recipes uploaded yet. <a href="{% url 'upload_recipe' %}"> Upload Recipe </a></p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+

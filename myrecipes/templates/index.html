@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}My Recipes - Home{% endblock %}
+
+{% block content %}
+    <div>
+    <h2 class="mt-4 mb-4">Welcome to My Recipes!</h2>
+    {% for paragraph in welcome_text %}
+        <p>{{ paragraph }}</p>
+    {% endfor %}
+    <p><a style="title" href="{% url 'signup' %}">Sign up</a> to share your recipes today!</p>
+    <br>
+    <h2>Top 5 Recipes with Most Likes</h2>
+    <table class="recipe-table">
+        <thead>
+            <tr>
+                <th>Date Created</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Likes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for recipe in top_recipes %}
+                <tr>
+                    <td class="recipe-cell">{{ recipe.date_created|date:"d/m/y" }}</td>
+                    <td class="recipe-cell"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></td>
+                    <td class="recipe-cell">{{ recipe.author.username }}</td>
+                    <td class="recipe-cell">{{ recipe.likes.count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
+
+
+
+
+
+

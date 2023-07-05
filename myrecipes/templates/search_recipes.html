@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <h2>Search Recipes</h2>
+        <form class='search-form' method="GET" action="{% url 'search_recipes' %}">
+            <a> You may apply one or more filters to your search </a>
+            <br>
+            <input type="text" name="title" placeholder="Filter by title" size="50">
+            <br>
+            <input type="text" name="types" placeholder="Filter by types (comma-separated)" size="50">
+            <br>
+            <input type="text" name="ingredients" placeholder="Filter by ingredients (comma-separated)" size="50">
+            <br>
+            <br>
+            <button type="submit">Search</button>
+        </form>
+        <br>
+        <table class="recipe-table">
+            <thead>
+                <tr>
+                    <th>Date Created</th>
+                    <th>Title</th>
+                    <th>Types Tags</th>
+                    <th>Ingredient Tags <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="The ingredient tags provided are based on the internal food ingredient list and may not include all the ingredients mentioned in the ingredients field.."></i></th>
+                </tr>
+            </thead>
+            {% for recipe in recipes %}
+                <tr>
+                    <td class="recipe-cell">{{ recipe.date_created|date:"d/m/y" }}</td>
+                    <td class="recipe-cell"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></td>
+                    <td class="recipe-cell">{{ recipe.cuisines_tag.all|join:', ' }}</td>
+                    <td class="recipe-cell">{{ recipe.ingredient_tag.all|join:', ' }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No recipes found.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+
+
+

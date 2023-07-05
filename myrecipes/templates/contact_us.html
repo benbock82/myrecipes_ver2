@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Contact Us</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Your Email</label>
+                <input type="email" name="email" id="id_email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Title</label>
+                <select name="title" id="id_title" class="form-control" required>
+                    <option value="">Select Title</option>
+                    <option value="technical_issue">Report Technical Issue</option>
+                    <option value="inappropriate_behaviour">Report Inappropriate Behaviour</option>
+                    <option value="others">Others</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="id_message" class="form-label">Message</label>
+                <textarea name="message" id="id_message" class="form-control" required></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+    </div>
+{% endblock %}

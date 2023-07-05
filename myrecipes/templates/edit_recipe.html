@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Edit Recipe</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Title</label>
+                <br>
+                {{ form.title }}
+            </div>
+            <div class="mb-3">
+                <label for="id_description" class="form-label">Description (optional)</label>
+                <br>
+                {{ form.description }}
+            </div>
+            <div class="mb-3">
+                <label for="id_cuisines_text" class="form-label">Diets/Intolerances/Cuisines/Meal Types Tags</label>
+                <br>
+                <a style="font-size: 12px;">Please enter the tags like '#vegan#lunch#chinese'</a>
+                <br>
+                {{ form.cuisines_text }}
+            </div>
+            <div class="mb-3">
+                <label for="id_ingredients_text" class="form-label">Ingredients</label>
+                <br>
+                {{ form.ingredients_text }}
+            </div>
+            <div class="mb-3">
+                <label for="id_cooking_method_text" class="form-label">Instructions</label>
+                <br>
+                {{ form.cooking_method_text }}
+            </div>
+            <div class="mb-3">
+                <label for="id_image" class="form-label">Please choose another image or remove the current image (optional)</label>
+                <br>
+                {% if form.instance.image %}
+                    <img src="{{ form.instance.image.url }}" id="image-preview" style="max-width: 200px; max-height: auto;">
+                {% else %}
+                    <img id="image-preview" style="display: none; max-width: 200px; max-height: auto;">
+                {% endif %}
+                <br>
+                <input type="file" name="image" accept="image/*" class="form-control-file" onchange="previewImage(event)">
+                <label for="remove_image">Remove Image</label>
+                <input type="checkbox" name="remove_image" id="remove_image">
+            </div>
+            <div class="mb-3">
+                <label for="id_youtube_url" class="form-label">Youtube URL (optional)</label>
+                <br>
+                {{ form.youtube_url }}
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript to handle image preview
+        function previewImage(event) {
+            var input = event.target;
+            var reader = new FileReader();
+
+            reader.onload = function() {
+                var imagePreview = document.getElementById('image-preview');
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    </script>
+{% endblock %}
+

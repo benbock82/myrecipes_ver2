@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Login</h2>
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Login failed:</strong> Please check your username and password.
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                {{ form.username }}
+                <br>
+                <label for="id_password" class="form-label">Password</label>
+                {{ form.password }}
+                <br>
+                <button class="btn btn-primary" type="submit">Login</button>
+                <p>
+                    <a href="{% url 'signup' %}">Sign Up</a> for an account if you do not have one.
+                    <a href="{% url 'reset_password' %}">Reset password</a> if you have forgotten.
+                </p>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+

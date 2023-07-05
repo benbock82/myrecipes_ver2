@@ -1,0 +1,199 @@
+    {% load static %}
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/32b500babc.js" crossorigin="anonymous"></script>
+        <title>My Recipes</title>
+        <style>
+            body {
+                display: grid;
+                grid-template-areas:
+                    "header header header"
+                    "nav article ads"
+                    "nav footer footer";
+                grid-template-rows: auto 1fr auto;
+                grid-template-columns: 1fr 4fr 1fr;
+                grid-row-gap: 10px;
+                grid-column-gap: 10px;
+                height: 100vh;
+                margin: 0;
+                background-color: #f8f9fa; /* light gray background color */
+                font-family: Arial, sans-serif;
+            }
+
+            header,
+            footer,
+            article,
+            nav,
+            div {
+                padding: 1.2em;
+                background: #fcc203; /* orange background color */
+                border-radius: 10px;
+            }
+
+            #pageHeader {
+                grid-area: header;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f78c23; /* darker orange background color */
+                color: #ffffff; /* white text color */
+            }
+
+            #pageHeader h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            #pageHeader img {
+                height: 120px;
+                width: auto;
+                margin-right: 10px;
+            }
+
+            #mainArticle {
+                grid-area: article;
+                background: #ffffff; /* white background color */
+            }
+
+            #mainNav {
+                grid-area: nav;
+                background: #ffffff; /* white background color */
+                border-radius: 10px;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1); /* subtle box shadow */
+                padding: 20px;
+            }
+
+            #mainNav ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            #mainNav ul li {
+                margin-bottom: 10px;
+            }
+
+            #mainNav ul li a {
+                text-decoration: none;
+                color: #333333; /* dark gray text color */
+                font-size: 18px;
+            }
+
+            #mainNav ul li a:hover {
+                color: #f78c23; /* darker orange text color on hover */
+            }
+
+            #siteAds {
+                grid-area: ads;
+                background: #ffffff; /* white background color */
+            }
+
+            #pageFooter {
+                grid-area: footer;
+                background: #f78c23; /* darker orange background color */
+                color: #ffffff; /* white text color */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+            }
+            .recipe-table {
+                   border-collapse: separate;
+                   border-spacing: 10px;
+            }
+
+            .recipe-cell {
+                padding: 10px;
+            }
+            .logo {
+            height: 100%;
+            width: auto;
+            max-height: 120px; /* Adjust the max-height value as needed */
+            margin-right: 10px;
+            }
+            .recipe-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .recipe-table th,
+            .recipe-table td {
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+
+            .recipe-table th {
+                background-color: #f5f5f5;
+                font-weight: bold;
+            }
+
+            .recipe-table tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .recipe-table tbody tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            .recipe-cell {
+                text-align: left;
+            }
+
+            /* Stack the layout on small devices/viewports. */
+            @media all and (max-width: 575px) {
+                body {
+                grid-template-areas:
+                    "header"
+                    "article"
+                    "ads"
+                    "nav"
+                    "footer";
+                grid-template-rows: auto 1fr auto 1fr auto;
+                grid-template-columns: 1fr;
+            }
+        }
+        </style>
+    </head>
+    <body>
+    <header id="pageHeader">
+        <img src="{% static 'logo3.png' %}" alt="Logo" id="logo">
+
+    </header>
+    <article id="mainArticle">
+        {% block content %}{% endblock %}
+    </article>
+    <nav id="mainNav" class="container">
+        {% if user.is_authenticated %}
+            <ul>
+                <li><a href="{% url 'account' %}">Account ({{ user.username }})</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'browse_recipes' %}">Browse Recipes</a></li>
+                <li><a href="{% url 'search_recipes' %}">Search Recipes</a></li>
+                <li><a href="{% url 'upload_recipe' %}">Upload Recipe</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'contact_us' %}">Contact Us</a></li>
+            </ul>
+        {% else %}
+            <ul>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'browse_recipes' %}">Browse Recipes</a></li>
+                <li><a href="{% url 'search_recipes' %}">Search Recipes</a></li>
+                <li><a href="{% url 'upload_recipe' %}">Upload Recipe</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'contact_us' %}">Contact Us</a></li>
+            </ul>
+        {% endif %}
+    </nav>
+    <div id="siteAds">Ads</div>
+    <footer id="pageFooter">@ My Recipes 2023 All Rights Reserved</footer>
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    </body>
+</html>
+
