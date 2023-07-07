@@ -2,4 +2,5 @@ Django~=4.2.2
 requests~=2.31.0
 django-multiupload~=0.6.1
 pandas~=2.0.2
-nltk~=3.8.1
+inflect~=7.0.0
+beautifulsoup4~=4.12.2

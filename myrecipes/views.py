@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic, View
-from .models import Recipe, Comment, CuisineTag, IngredientTag
+from .models import Recipe, Comment
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordChangeView
 from django.views.generic import CreateView, TemplateView
 from django.contrib.auth.forms import User
@@ -11,6 +11,9 @@ from django.views.generic.edit import UpdateView, DeleteView
 from .forms import CustomUserCreationForm
 from django.core.mail import send_mail
 from django.contrib.auth import views as auth_views
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
+from .utilities import add_ingredient
 
 
 class Home(generic.ListView):
@@ -139,34 +142,31 @@ class EditRecipeView(LoginRequiredMixin, UpdateView):
         # Handle uploaded image
         image_file = self.request.FILES.get('image')
         if image_file:
-            form.instance.image = image_file
+            # Delete the previous image file if a new image is uploaded
+            if form.instance.image:
+                form.instance.image.delete()
 
-        # Check if the image should be removed
-        remove_image = form.data.get('remove_image', False)
-        if remove_image:
+            form.instance.image = image_file
+        elif form.data.get('remove_image'):
             # Remove the image file from storage and clear the image field
-            form.instance.image.delete()
+            if form.instance.image:
+                form.instance.image.delete()
             form.instance.image = None
 
         return super().form_valid(form)
 
 
 class DeleteRecipeView(LoginRequiredMixin, View):
-    def form_valid(self, form):
-        # Check if the "image" field is cleared in the form
-        if form.cleaned_data['image'] is None:
-            # Delete the old image from the database
-            recipe = form.instance
-            recipe.image.delete(save=False)
-
-        return super().form_valid(form)
-
     def post(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if recipe.author != request.user:
             # Handle unauthorized deletion attempt
             # Redirect to an appropriate page or return an error message
             pass
+
+        # Delete the image file from storage if it exists
+        if recipe.image:
+            recipe.image.delete()
 
         recipe.delete()
         return redirect('account')
@@ -222,7 +222,7 @@ class SearchRecipeView(TemplateView):
         cuisines_filter = self.request.GET.get('types', '').lower()
         ingredients_filter = self.request.GET.get('ingredients', '').lower()
 
-        recipes = Recipe.objects.order_by("-date_created")
+        recipes = Recipe.objects.order_by("-date_created").distinct()
 
         if title_filter:
             recipes = recipes.filter(title__icontains=title_filter)
@@ -285,6 +285,27 @@ class ContactUsSuccessView(View):
 
 class AboutView(TemplateView):
     template_name = 'about.html'
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class AdminToolsView(View):
+    template_name = 'admin_tools.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        if 'add_ingredients' in request.POST:
+            new_ingredients = request.POST.get('ingredients', '').split(', ')
+            new_ingredients = [item.lower() for item in new_ingredients]
+            add_ingredient(new_ingredients)
+            return redirect('admin_tools')
+
+        return render(request, self.template_name)
+
+
+class FaqView(TemplateView):
+    template_name = 'faq.html'
 
 
 

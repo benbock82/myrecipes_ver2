@@ -26,4 +26,6 @@ urlpatterns = [
     path('contact_us/', views.ContactUsView.as_view(), name='contact_us'),
     path('contact_us/success/', views.ContactUsSuccessView.as_view(), name='contact_us_success'),
     path('about/', views.AboutView.as_view(), name='about'),
+    path('admin_tools/', views.AdminToolsView.as_view(), name='admin_tools'),
+    path('faq/', views.FaqView.as_view(), name='faq'),
 ]

@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recipe',
             name='picture',
-            field=models.ImageField(blank=True, upload_to='media/'),
+            field=models.ImageField(blank=True, upload_to='recipe/'),
         ),
     ]
