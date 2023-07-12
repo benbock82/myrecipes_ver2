@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .utilities import extract_matching_ingredients
+from storages.backends.s3boto3 import S3StaticStorage
 
 
 class CuisineTag(models.Model):
@@ -32,7 +33,7 @@ class Recipe(models.Model):
     cuisines_text = models.CharField(max_length=1000, blank=True)
     cuisines_tag = models.ManyToManyField(CuisineTag)
     ingredient_tag = models.ManyToManyField(IngredientTag)
-    image = models.ImageField(upload_to='recipe/', blank=True, null=True)  # Updated field
+    image = models.ImageField(upload_to='recipe/', storage=S3StaticStorage, blank=True, null=True)  # Updated field
     youtube_url = models.URLField(blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='liked_recipes')

@@ -1,6 +1,10 @@
 Django~=4.2.2
+python-dotenv~=1.0.0
 requests~=2.31.0
 django-multiupload~=0.6.1
 pandas~=2.0.2
 inflect~=7.0.0
 beautifulsoup4~=4.12.2
+django-storages~=1.13.2
+boto3~=1.28.2
+Pillow~=10.0.0
