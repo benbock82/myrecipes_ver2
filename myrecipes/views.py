@@ -9,11 +9,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from django.views.generic.edit import UpdateView, DeleteView
 from .forms import CustomUserCreationForm
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import views as auth_views
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from .utilities import add_ingredient
+import os
+import shutil
+from django.conf import settings
 
 
 class Home(generic.ListView):
@@ -301,7 +304,46 @@ class AdminToolsView(View):
             add_ingredient(new_ingredients)
             return redirect('admin_tools')
 
+        if 'email_db' in request.POST:
+            # Get the path to the 'db.sqlite3' file
+            db_file_path = os.path.join(settings.BASE_DIR, 'db.sqlite3')
+
+            # Create a temporary directory to store the database file
+            temp_dir = tempfile.mkdtemp()
+
+            try:
+                # Copy the database file to the temporary directory
+                temp_db_file_path = os.path.join(temp_dir, 'db.sqlite3')
+                shutil.copy(db_file_path, temp_db_file_path)
+
+                # Create an email message
+                email_subject = 'Database Backup'
+                email_body = 'Please find the attached database backup file.'
+                email = EmailMessage(
+                    subject=email_subject,
+                    body=email_body,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=[settings.EMAIL_HOST_USER],
+                )
+
+                # Attach the database file to the email
+                email.attach_file(temp_db_file_path)
+
+                # Send the email
+                email.send()
+
+                # Delete the temporary directory
+                shutil.rmtree(temp_dir)
+
+                # Redirect back to the admin tools page
+                return redirect('admin_tools')
+            except Exception as e:
+                # Handle any errors that occur during the process
+                error_message = str(e)
+                return HttpResponse(f"An error occurred: {error_message}", status=500)
+
         return render(request, self.template_name)
+
 
 
 class FaqView(TemplateView):

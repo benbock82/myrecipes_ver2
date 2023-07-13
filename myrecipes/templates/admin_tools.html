@@ -3,15 +3,22 @@
 {% block content %}
     <div class="container admin-tools">
         <h2>Admin Tools</h2>
-        <p> Welcome, {{user.username}}!</p>
+        <p>Welcome, {{ user.username }}!</p>
         <form method="post">
             {% csrf_token %}
             <div class="mb-3 admin-tools">
-                <label for="id_ingredients" class="form-label">Add Ingredients into the ingredients list</label>
+                <label for="id_ingredients" class="form-label">Add Ingredients to the Ingredients List</label>
                 <input type="text" name="ingredients" class="form-control" placeholder="Enter ingredients separated by commas">
             </div>
             <button class="btn btn-primary" type="submit" name="add_ingredients">Add Ingredients</button>
         </form>
-        <!-- Add more admin tools here -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3 admin-tools">
+                <label for="id_send_email" class="form-label">Send Database File</label>
+            </div>
+            <button class="btn btn-primary" type="submit" name="send_email">Send Database File</button>
+        </form>
     </div>
 {% endblock %}
+
