@@ -17,7 +17,6 @@ from .utilities import add_ingredient
 import os
 import shutil
 from django.conf import settings
-from django.views.decorators.csrf import csrf_protect
 
 
 class Home(generic.ListView):
@@ -90,7 +89,7 @@ class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'password_reset_complete.html'
 
-@csrf_protect
+
 class AccountView(LoginRequiredMixin, TemplateView):
     template_name = 'account.html'
 
