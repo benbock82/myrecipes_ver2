@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-(o*gc))=^)(w$w2t7h(4y*wjj73&x%$3p$+#h03j_xozq9=rp_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOST', '')]
+#ALLOWED_HOSTS = [os.getenv('ALLOWED_HOST'), '']
+ALLOWED_HOSTS = ['myrecipes.live', 'www.myrecipes.live', 'myrecipes.14t5n224ur6l.au-syd.codeengine.appdomain.cloud']
 
 # Application definition
 
@@ -149,4 +150,3 @@ AWS_S3_SECRET_ACCESS_KEY = os.getenv('AWS_S3_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_QUERYSTRING_AUTH = False
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOST'), ...]
