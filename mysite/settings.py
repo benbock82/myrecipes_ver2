@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-(o*gc))=^)(w$w2t7h(4y*wjj73&x%$3p$+#h03j_xozq9=rp_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['myrecipes.life', 'www.myrecipes.life', 'myrecipes.14t5n224ur6l.au-syd.codeengine.appdomain.cloud']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['myrecipes.life', 'www.myrecipes.life', 'myrecipes.14t5n224ur6l.au-syd.codeengine.appdomain.cloud']
+# ALLOWED_HOSTS = []
 
 # Application definition
 
