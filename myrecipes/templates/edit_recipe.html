@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if write_enabled == 'read-only' %}
+        <div class="upgrade-warning">
+            Currently, we are upgrading this website so only read is available.
+            Please do not create or edit any account, recipes and comments.
+        </div>
+    {% endif %}
     <div class="container">
         <h2>Edit Recipe</h2>
         <form method="post" enctype="multipart/form-data">

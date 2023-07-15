@@ -9,14 +9,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from django.views.generic.edit import UpdateView, DeleteView
 from .forms import CustomUserCreationForm
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail
 from django.contrib.auth import views as auth_views
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils.decorators import method_decorator
 from .utilities import add_ingredient
-import os
-import shutil
+from django.http import FileResponse
 from django.conf import settings
+import mimetypes
+from django.utils.decorators import method_decorator
+import os
 
 
 class Home(generic.ListView):
@@ -37,9 +38,21 @@ class CustomLoginView(LoginView):
     template_name = 'login.html'
     redirect_authenticated_user = True
 
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        print(permissions_octal)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['username'] = self.request.user.username
+        context['write_enabled'] = self.get_sqlite3_permission()
         return context
 
 
@@ -52,6 +65,23 @@ class CustomSignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'signup.html'
     success_url = reverse_lazy('login')
+
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        print(permissions_octal)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add the write_enabled variable to the context
+        context['write_enabled'] = self.get_sqlite3_permission()
+        return context
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -92,14 +122,29 @@ class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
 
 class AccountView(LoginRequiredMixin, TemplateView):
     template_name = 'account.html'
+    context_object_name = 'user_recipes'
 
     def get_queryset(self):
         return Recipe.objects.filter(author=self.request.user).order_by("-date_created")
+
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        print(permissions_octal)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_recipes = self.get_queryset()
         context['user_recipes'] = user_recipes
+
+        # Add the write_enabled variable to the context
+        context['write_enabled'] = self.get_sqlite3_permission()
 
         return context
 
@@ -120,8 +165,22 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        print(permissions_octal)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Add the write_enabled variable to the context
+        context['write_enabled'] = self.get_sqlite3_permission()
+
         if self.request.method == 'POST':
             image_file = self.request.FILES.get('image')
             if image_file and hasattr(image_file, 'url'):
@@ -138,6 +197,23 @@ class EditRecipeView(LoginRequiredMixin, UpdateView):
     form_class = RecipeForm
     template_name = 'edit_recipe.html'
     success_url = reverse_lazy('account')
+
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        print(permissions_octal)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add the write_enabled variable to the context
+        context['write_enabled'] = self.get_sqlite3_permission()
+        return context
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -291,11 +367,24 @@ class AboutView(TemplateView):
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AdminToolsView(View):
+class AdminToolsView(TemplateView):
     template_name = 'admin_tools.html'
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def get_sqlite3_permission(self):
+        # Get the file permissions as an integer
+        permissions = os.stat(settings.DATABASES['default']['NAME']).st_mode
+        # Convert the integer permissions to octal representation
+        permissions_octal = oct(permissions)
+        if permissions_octal == '0o100666':
+            return 'read_write'
+        if permissions_octal == '0o100444':
+            return 'read-only'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add the write_enabled variable to the context
+        context['write_enabled'] = self.get_sqlite3_permission()
+        return context
 
     def post(self, request):
         if 'add_ingredients' in request.POST:
@@ -304,46 +393,23 @@ class AdminToolsView(View):
             add_ingredient(new_ingredients)
             return redirect('admin_tools')
 
-        if 'email_db' in request.POST:
-            # Get the path to the 'db.sqlite3' file
-            db_file_path = os.path.join(settings.BASE_DIR, 'db.sqlite3')
+        if 'download_db' in request.POST:
+            db_file_path = settings.DATABASES['default']['NAME']
+            content_type = mimetypes.guess_type(db_file_path)[0]
+            content_disposition = f'attachment; filename=db.sqlite3'
+            file_response = FileResponse(open(db_file_path, 'rb'), content_type=content_type)
+            file_response['Content-Disposition'] = content_disposition
+            return file_response
 
-            # Create a temporary directory to store the database file
-            temp_dir = tempfile.mkdtemp()
+        if 'read_only' in request.POST:
+            # Set the file permissions to read-only
+            os.chmod(settings.DATABASES['default']['NAME'], 0o100444)
+            return redirect('admin_tools')
 
-            try:
-                # Copy the database file to the temporary directory
-                temp_db_file_path = os.path.join(temp_dir, 'db.sqlite3')
-                shutil.copy(db_file_path, temp_db_file_path)
-
-                # Create an email message
-                email_subject = 'Database Backup'
-                email_body = 'Please find the attached database backup file.'
-                email = EmailMessage(
-                    subject=email_subject,
-                    body=email_body,
-                    from_email=settings.EMAIL_HOST_USER,
-                    to=[settings.EMAIL_HOST_USER],
-                )
-
-                # Attach the database file to the email
-                email.attach_file(temp_db_file_path)
-
-                # Send the email
-                email.send()
-
-                # Delete the temporary directory
-                shutil.rmtree(temp_dir)
-
-                # Redirect back to the admin tools page
-                return redirect('admin_tools')
-            except Exception as e:
-                # Handle any errors that occur during the process
-                error_message = str(e)
-                return HttpResponse(f"An error occurred: {error_message}", status=500)
-
-        return render(request, self.template_name)
-
+        if 'read_write' in request.POST:
+            # Set the file permissions to read-write
+            os.chmod(settings.DATABASES['default']['NAME'], 0o100666)
+            return redirect('admin_tools')
 
 
 class FaqView(TemplateView):

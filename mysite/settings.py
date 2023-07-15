@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-(o*gc))=^)(w$w2t7h(4y*wjj73&x%$3p$+#h03j_xozq9=rp_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = [os.getenv('ALLOWED_HOST'), '']
-ALLOWED_HOSTS = ['myrecipes.live', 'www.myrecipes.live', 'myrecipes.14t5n224ur6l.au-syd.codeengine.appdomain.cloud']
+# ALLOWED_HOSTS = ['myrecipes.life', 'www.myrecipes.life', 'myrecipes.14t5n224ur6l.au-syd.codeengine.appdomain.cloud']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -135,7 +135,7 @@ STATICFILES_DIRS = [
 ]
 
 # setting for email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Your Gmail email address
@@ -150,3 +150,23 @@ AWS_S3_SECRET_ACCESS_KEY = os.getenv('AWS_S3_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_QUERYSTRING_AUTH = False
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django.core.mail': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

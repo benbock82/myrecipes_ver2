@@ -9,16 +9,29 @@
             <div class="mb-3 admin-tools">
                 <label for="id_ingredients" class="form-label">Add Ingredients to the Ingredients List</label>
                 <input type="text" name="ingredients" class="form-control" placeholder="Enter ingredients separated by commas">
+                <button class="btn btn-primary" type="submit" name="add_ingredients">Add Ingredients</button>
             </div>
-            <button class="btn btn-primary" type="submit" name="add_ingredients">Add Ingredients</button>
         </form>
         <form method="post">
             {% csrf_token %}
             <div class="mb-3 admin-tools">
-                <label for="id_send_email" class="form-label">Send Database File</label>
+                <label for="id_toggle_write" class="form-label">Database write status: {{ write_enabled }}</label>
+                <br>
+                <button class="btn btn-primary" type="submit" name="read_only">Read Only</button>
+                <br>
+                <button class="btn btn-primary" type="submit" name="read_write">Read and Write</button>
+
             </div>
-            <button class="btn btn-primary" type="submit" name="send_email">Send Database File</button>
+        </form>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3 admin-tools">
+                <label for="id_download_db" class="form-label">Download Database File</label>
+                <br>
+                <button class="btn btn-primary" type="submit" name="download_db">Download Database File</button>
+            </div>
         </form>
     </div>
 {% endblock %}
+
 
